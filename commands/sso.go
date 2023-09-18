@@ -53,13 +53,6 @@ func (c *SSOCommand) Flags() *cli.FlagSet {
 		Usage:   "GitHub organization name.",
 	})
 
-	f.StringVar(&cli.StringVar{
-		Name:    "saml-provider",
-		Target:  &c.flagSAMLProvider,
-		Example: "https://accounts.google.com/o/saml2/idp?idpid=example",
-		Usage:   "The SAML provider URL.",
-	})
-
 	f.BoolVar(&cli.BoolVar{
 		Name:    "exceptions",
 		Target:  &c.flagListExceptions,
@@ -82,9 +75,6 @@ func (c *SSOCommand) Flags() *cli.FlagSet {
 		}
 		if c.flagOrg == "" {
 			err = errors.Join(existingErr, fmt.Errorf("missing -org"))
-		}
-		if c.flagSAMLProvider == "" {
-			err = errors.Join(existingErr, fmt.Errorf("missing -saml-provider"))
 		}
 		if c.flagLimit < 0 {
 			err = errors.Join(existingErr, fmt.Errorf("-limit must be equal or greater than 0"))
@@ -110,7 +100,7 @@ func (c *SSOCommand) Run(ctx context.Context, args []string) error {
 		return fmt.Errorf("failed to create GitHub client: %w", err)
 	}
 
-	samlUsers, err := gh.ListSAMLUsers(ctx, c.flagOrg, c.flagSAMLProvider)
+	samlUsers, err := gh.ListSAMLUsers(ctx, c.flagOrg)
 	if err != nil {
 		return fmt.Errorf("failed to list SAML users: %w", err)
 	}
